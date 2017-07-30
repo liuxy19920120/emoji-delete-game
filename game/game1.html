@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="css/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	</head>
+	<body>
+		<div id="wrap">
+			<span class="logo"></span>
+			<h4>你的鼠标有多快</h4>
+			<h5>游戏说明：“点击游戏”，随机掉下表情点中它，千万别让它掉下去！！！</h5>
+			<div class="game">				
+				<div class="score">
+					<span class="addScore"><i>0</i>分<br />得分</span><br/><span class="subScore"><i>0</i>分<br />失分</span></div>
+				<em class="bg"></em>
+				<span class="begin">开始游戏</span>
+				<img src=""/>
+			</div>				
+		</div>
+		<script src="js/tween.js"></script>
+		<script src="js/utils.js"></script>
+		<script type="text/javascript">
+			var begin = document.querySelector('.begin');
+			var score = document.querySelector('.score');
+			var addScore = score.querySelector('.addScore').firstElementChild;
+			var subScore = score.querySelector('.subScore').firstElementChild;
+			var img = document.getElementsByTagName('img')[0];
+			var time = 5000;
+			
+			// 开始游戏
+			begin.onclick =  function(){
+				mTween(begin,{bottom:0,opacity:0},500);
+				mTween(score,{left:-108},500,"linear",imgDrop);
+			}
+			
+			// 表情图片正常下落
+			function imgDrop(){
+				img.style.top = '0px';
+				img.style.display = 'block';				
+				img.onload = function(){					
+					img.style.left = Math.round(Math.random()*(img.parentNode.clientWidth- img.offsetWidth)) + 'px';
+				mTween(img,{top:img.parentNode.clientHeight - img.offsetHeight},time,"linear",function(){
+							img.style.top = '0px';
+							time-=100;
+							img.style.display = 'none';
+							shake(img.parentNode,"top",30,function(){
+								if((parseInt(subScore.innerHTML)+1) >= 5){
+									subScore.innerHTML = 0;
+									addScore.innerHTML = 0;
+									mTween(begin,{bottom:26,opacity:1},500);
+									begin.innerHTML = "游戏失败";
+									mTween(score,{left:14},500);
+									time = 5000;
+									return;
+									
+								}
+								subScore.innerHTML = ++subScore.innerHTML;
+								imgDrop();
+							});
+					});
+				}
+					
+					img.src = 'images/'+Math.round(Math.random()*4)+'.png';
+			}
+			
+			// 图片点击
+			img.onclick = function(){
+				clearInterval(img.timer);
+				img.onload = null;
+				img.src = 'images/shake.png';
+				shake(img,"left",30,function(){
+					img.style.display = 'none';
+					addScore.innerHTML = ++addScore.innerHTML;
+					imgDrop();
+				})
+			}
+			
+			
+			
+		</script>
+	</body>
+</html>
